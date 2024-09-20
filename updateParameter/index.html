@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Configurable Filter to Parameter Extension</title>
+
+    <!-- Include the Tableau Extensions API library -->
+    <script src="https://cdn.jsdelivr.net/gh/tableau/extensions-api/lib/tableau.extensions.1.latest.min.js"></script>
+
+    <style>
+        #configForm { display: none; }
+        #dashboard { display: none; }
+    </style>
+
+    <script>
+        let config = {};
+
+        document.addEventListener('DOMContentLoaded', function() {
+            tableau.extensions.initializeAsync({ configure: configure }).then(() => {
+                // Check if we have saved settings
+                if (tableau.extensions.settings.get('configured') === 'true') {
+                    loadSavedSettings();
+                    initializeExtension();
+                } else {
+                    showConfigForm();
+                }
+            });
+        });
+
+        function configure() {
+            // The configure function is called when the configure button is clicked
+            showConfigForm();
+        }
+
+        function showConfigForm() {
+            document.getElementById('configForm').style.display = 'block';
+            document.getElementById('dashboard').style.display = 'none';
+
+            // Populate the worksheet dropdown
+            const worksheetSelect = document.getElementById('worksheetSelect');
+            worksheetSelect.innerHTML = '';
+            tableau.extensions.dashboardContent.dashboard.worksheets.forEach(worksheet => {
+                const option = document.createElement('option');
+                option.value = worksheet.name;
+                option.textContent = worksheet.name;
+                worksheetSelect.appendChild(option);
+            });
+        }
+
+        function saveSettings() {
+            config.worksheetName = document.getElementById('worksheetSelect').value;
+            config.filterName = document.getElementById('filterName').value;
+            config.parameterName = document.getElementById('parameterName').value;
+
+            // Save settings
+            tableau.extensions.settings.set('worksheetName', config.worksheetName);
+            tableau.extensions.settings.set('filterName', config.filterName);
+            tableau.extensions.settings.set('parameterName', config.parameterName);
+            tableau.extensions.settings.set('configured', 'true');
+
+            tableau.extensions.settings.saveAsync().then(() => {
+                showDashboard();
+                initializeExtension();
+            });
+        }
+
+        function loadSavedSettings() {
+            config.worksheetName = tableau.extensions.settings.get('worksheetName');
+            config.filterName = tableau.extensions.settings.get('filterName');
+            config.parameterName = tableau.extensions.settings.get('parameterName');
+        }
+
+        function showDashboard() {
+            document.getElementById('configForm').style.display = 'none';
+            document.getElementById('dashboard').style.display = 'block';
+            document.getElementById('worksheetName').textContent = config.worksheetName;
+            document.getElementById('filterName').textContent = config.filterName;
+            document.getElementById('parameterName').textContent = config.parameterName;
+        }
+
+        function initializeExtension() {
+            const worksheet = tableau.extensions.dashboardContent.dashboard.worksheets.find(
+                w => w.name === config.worksheetName
+            );
+
+            if (!worksheet) {
+                console.error(`Worksheet "${config.worksheetName}" not found.`);
+                return;
+            }
+
+            worksheet.addEventListener(tableau.TableauEventType.FilterChanged, (event) => {
+                event.getFilterAsync().then(filter => {
+                    if (filter.fieldName === config.filterName) {
+                        updateParameter(filter);
+                    }
+                });
+            });
+        }
+
+        function updateParameter(filter) {
+            const filterValues = filter.appliedValues.map(v => v.value);
+            const parameterValue = filterValues.length === 1 ? filterValues[0] : filterValues.join(', ');
+
+            tableau.extensions.dashboardContent.dashboard.getParametersAsync().then(parameters => {
+                const parameter = parameters.find(p => p.name === config.parameterName);
+
+                if (parameter) {
+                    parameter.changeValueAsync(parameterValue);
+                    console.log(`Updated parameter "${config.parameterName}" with value: ${parameterValue}`);
+                } else {
+                    console.error(`Parameter "${config.parameterName}" not found.`);
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+    <div id="configForm">
+        <h2>Configure Extension</h2>
+        <label for="worksheetSelect">Select Worksheet:</label>
+        <select id="worksheetSelect"></select><br><br>
+        <label for="filterName">Filter Name:</label>
+        <input type="text" id="filterName"><br><br>
+        <label for="parameterName">Parameter Name:</label>
+        <input type="text" id="parameterName"><br><br>
+        <button onclick="saveSettings()">Save Configuration</button>
+    </div>
+
+    <div id="dashboard">
+        <h1>Filter to Parameter Extension</h1>
+        <p>This extension updates a specific parameter when a specific filter is changed.</p>
+        <p>Worksheet: <span id="worksheetName"></span></p>
+        <p>Filter: <span id="filterName"></span></p>
+        <p>Parameter: <span id="parameterName"></span></p>
+    </div>
+</body>
+</html>
