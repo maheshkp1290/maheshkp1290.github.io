@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="en-GB">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <title>SuperTables</title>
+    <script src="./tableau.extensions.1.latest.min.js"></script>
+    <link rel="stylesheet" href="./css/main.css" />
+    <link rel="stylesheet" href="./css/ag-grid.css" />
+    <!-- <link rel="stylesheet" href="/css/ag-grid.min.css" /> -->
+    <link rel="stylesheet" href="./css/ag-theme-alpine.min.css" />
+    <link rel="stylesheet" href="./css/ag-theme-balham.min.css" />
+    <link rel="stylesheet" href="./css/ag-theme-tableau.css" />
+    <!-- <link rel="stylesheet" href="/css/ag-theme-tableau.min.css" /> -->
+    <link rel="stylesheet" href="./static/custom.css" />
+    <link rel="stylesheet" href="./css/ag-grid-patches.css" />
+    <link rel="stylesheet" href="./css/landingpage.css" />
+    <link rel="stylesheet" href="./css/fonts.css" />
+    <link rel="icon" href="./favicon.ico" type="image/x-icon" />
+    <script type="module" crossorigin src="./lib/index-B8mSdCo9.js"></script>
+    <link rel="modulepreload" crossorigin href="./lib/pdfmake-chunk-CREJIlzu.js">
+    <link rel="modulepreload" crossorigin href="./lib/spinner-0KXoaPrw.js">
+    <link rel="modulepreload" crossorigin href="./lib/login-ejop7gRQ.js">
+    <link rel="stylesheet" crossorigin href="./lib/spinner-IJ1O0mgh.css">
+  <script src="./sentry.min.js"></script></head>
+
+  <body style="box-sizing: border-box; margin: 0;">
+    <h2 class="invisibleHeading">SuperTables</h2>
+    <div id="before_table"></div>
+    <div id="app" style="height: 100vh; width: 100vw; overflow: hidden; display: flex; flex-direction: column">
+      <div id="process-bar" class="animated-gradient" style="display: none"></div>
+      <div id="loading" style="flex: 1">
+        <div class="loader-backdrop">
+          <div class="loader"></div>
+          Loading SuperTables...
+          <div id="loading-container" class="loader-number-content">
+            <span id="loading-progress" class="loader-number">0</span>
+            <span class="loader-number-percentage">%</span>
+          </div>
+        </div>
+      </div>
+      <div id="extensionTriggerButton" style="display: none">
+        <button class="openButton btn-block">Open SuperTables</button>
+      </div>
+
+      <div id="alert" class="alert" role="alert" style="display: none">
+        <h4 id="alert-heading" class="alert-heading"></h4>
+        <span id="alert-message"></span>
+        <div id="error-help" style="display: none">
+          <hr />
+          <p id="remove-formulas" style="display: none">
+            If the problem occurs in the formulas, try removing the formulas.
+            <button id="remove-formulas-button" class="font-bold border border-secondary bg-transparent text-secondary p-1.5 rounded hover:bg-secondary hover:text-white">Remove formulas</button>
+          </p>
+
+          <p id="remove-formulas-message" class="font-bold mt-2" style="display: none">Formulas are removed.</p>
+          <p id="branded-support" class="font-bold mb-0">
+            Need help?
+            <a
+              href="https://appsfortableau.infotopics.com/support/contact-support"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="text-secondary hover:underline"
+            >
+              Contact support
+            </a>
+          </p>
+        </div>
+      </div>
+
+      <!-- AG-Grid Mount Sections  -->
+      <div id="grid" style="width: 100%; height: 100%; display: none; flex: 1" class="ag-theme-balham">
+      </div>
+
+      <!-- LANDING PAGE SECTION -->
+      <div id="landing-page-container" class="landing" style="display: none">
+        <div class="content">
+          <div class="header">
+            <div class="aft-logo big hide-on-200-height"></div>
+            <div class="home-title hide-on-200-height">
+              <p class="hide-on-200-height title" id="supertables-title">SuperTables</p>
+            </div>
+          </div>
+
+          <div class="container" id="landing-container">
+            <div class="box" style="display: none" id="dashboard-card">
+              <div>
+                <div class="subtitle">Get started!</div>
+                <div class="info">Open the configuration to select the worksheet you want SuperTables to display.</div>
+              </div>
+              <div class="normal-btn button" id="configure-button">Configuration</div>
+            </div>
+
+            <div class="box" style="display: none" id="viz-card">
+              <div>
+                <div class="subtitle">Get started!</div>
+                <ol class="info text-left">
+                  <li>
+                    Drag dimensions and measures columns to the <strong>Measures</strong> and
+                    <strong>Dimensions</strong> tiles in the marks pane.
+                  </li>
+                  <li>Further configure the extension by clicking the <strong> Format Extension</strong> button.</li>
+                </ol>
+              </div>
+            </div>
+
+            <div class="box" style="display: none" id="gif-card">
+              <img style="width: 100%; height: 100%" alt="SuperTables" />
+            </div>
+
+            <div class="box" style="display: none" id="new-card">
+              <div>
+                <div class="subtitle">New to SuperTables?</div>
+                <div class="info hide-on-400-height">Learn how to create amazing SuperTables!</div>
+              </div>
+              <a
+                class="link"
+                target="_blank"
+                href="https://appsfortableau.infotopics.com/support/documentation/supertables-product-guide/"
+              >
+                <div class="documentation button">Documentation</div>
+              </a>
+            </div>
+
+            <div class="box" style="display: none" id="unsupported-card">
+              <div>
+                <div class="subtitle">Unsupported Environment</div>
+                <div class="info hide-on-400-height">
+                  Please run the SuperTables extension in a Tableau environment.
+                </div>
+              </div>
+            </div>
+
+            <div class="box" style="display: none" id="viewer-card">
+              <div>
+                <div class="info hide-on-400-height">
+                  Please upgrade or request a free trial to enable SuperTables for viewers of published dashboards.
+                </div>
+              </div>
+              <div class="commerce-buttons">
+                <a
+                  href="https://appsfortableau.infotopics.com/request-free-trial/"
+                  target="_blank"
+                  title="Request Trial (https://appsfortableau.infotopics.com/request-free-trial/)"
+                >
+                  <div class="normal-btn button">Request trial</div>
+                </a>
+                <a
+                  href="https://appsfortableau.infotopics.com/extensions-for-tableau/supertables/pricing-supertables/"
+                  target="_blank"
+                  title="Buy Now (https://appsfortableau.infotopics.com/extensions-for-tableau/supertables/pricing-supertables/)"
+                >
+                  <div class="normal-btn button">Buy now</div>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="container footer">
+          <div>
+            <div id="extension-version-label" class="extension-version-container"></div>
+          </div>
+          <div class="link"><a target="_blank" href="https://appsfortableau.infotopics.com/">Website</a></div>
+          <div class="link">
+            <a target="_blank" href="https://appsfortableau.infotopics.com/support/contact-support/">Support</a>
+          </div>
+          <div class="link"><a target="_blank" href="https://appsfortableau.infotopics.com/support/faq/">FAQ</a></div>
+          <div class="link">
+            <a target="_blank" href="https://appsfortableau.infotopics.com/about-apps-for-tableau/">About</a>
+          </div>
+        </div>
+        <div id="extension-version-label" class="extension-version-container"></div>
+      </div>
+
+      <script>
+        if (window.self === window.top) {
+          console.warn('Not inside an iframe, not able to load Tableau Extensions Api.');
+          var loadingDiv = document.getElementById('loading');
+          if (loadingDiv) {
+            loadingDiv.style.display = 'none';
+          }
+          var landingspage = document.getElementById('landing-page-container');
+          if (landingspage) {
+            landingspage.style.display = 'flex';
+          }
+        }
+      </script>
+      <!-- END LANDINGSPAGE SECTION -->
+
+      <!-- SuperTables Free Banner -->
+      <div id="free-banner" style="display: none; padding: 10px 5px">
+        <div id="banner-message">
+          SuperTables Free allows all functionality in Tableau Desktop and web authoring for demo and test purposes. It
+          is not enabled for viewers of published dashboards.
+        </div>
+        <a
+          id="banner-cta"
+          href="https://appsfortableau.infotopics.com/request-free-trial/"
+          target="_blank"
+          title="Request Trial (https://appsfortableau.infotopics.com/request-free-trial/)"
+        >
+          Request a fully functional trial
+        </a>
+      </div>
+
+     <!-- Floating Reload button  -->
+<div style="position: fixed; bottom: 5px; right: 7px; z-index: 5">
+  <button id="reloadButton" class="rounded-lg border border-gray-400" style="display: none; padding:3.5px; background-color: white;" title="Refresh datasources">
+    <svg id="reloadIcon" stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true" height="20" width="20" xmlns="http://www.w3.org/2000/svg">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+    </svg>
+  </button>
+</div>
+
+<style>
+  /* Keyframes for continuous rotation */
+  @keyframes rotate {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+  /* Apply rotation animation */
+  .rotate {
+    animation: rotate 1s linear infinite;
+  }
+</style>
+
+      <div id="exportGenerate" style="display: none">
+        <div
+          style="
+            position: fixed;
+            width: 100%;
+            max-width: 700px;
+            top: 50%;
+            z-index: 5;
+            right: 50%;
+            transform: translate(50%, -50%);
+          "
+          class="d-flex flex-column border"
+        >
+            <div class="bg-white shadow-md rounded-lg p-4">
+              <div class="flex justify-between items-center">
+                <h5 class="text-lg font-semibold">Generating Export...</h5>
+                <button
+                  id="dismissToasterButtonForExport"
+                  class="bg-transparent border border-gray-400 text-gray-400 text-xs rounded-full h-5 w-5 p-1 flex justify-center items-center"
+                >
+                  X
+                </button>
+              </div>
+              <p class="text-gray-700 mb-1">
+                Please wait a moment while the export is being generated in the background. This can take a while depending on the amount of data and column images.
+              </p>
+              <p id="ExportPercentageComplete" class="font-bold">Loading...</p>
+            </div>
+      </div>
+    </div>
+    <div id="after_table"></div>
+    <script src="./static/custom.js"></script>
+  <script defer src="https://static.cloudflareinsights.com/beacon.min.js/vcd15cbe7772f49c399c6a5babf22c1241717689176015" integrity="sha512-ZpsOmlRQV6y907TI0dKBHq9Md29nnaEIPlkf84rnaERnq6zvWvPUqr2ft8M1aS28oN72PdrCzSjY4U6VaAw1EQ==" data-cf-beacon='{"rayId":"8efac5d9affbb294","serverTiming":{"name":{"cfExtPri":true,"cfL4":true,"cfSpeedBrain":true,"cfCacheStatus":true}},"version":"2024.10.5","token":"e2613eed3cdc4def9323b88d74074e95"}' crossorigin="anonymous"></script>
+</body>
+</html>
